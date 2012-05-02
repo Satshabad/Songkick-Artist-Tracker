@@ -6,6 +6,8 @@ except ImportError:
     print 'Please install the mechanize library (sudo pip install mechanize)'
     exit()
 
+import pickle
+
 import cookielib
 
 try:
@@ -118,12 +120,24 @@ def main():
         if trackedArtists.issubset(set()):
             morePages = False
 
+    # get the artists to track, if there was a previously tracked directory, just get the new artists.
     artistsToGet = []
     if options.d:
+        try:
+            unp = pickle.Unpickler(open('.tracked'))
+            prevArtistsDict = unp.load()
+        except IOError:
+            prevArtistsDict = {}
         artistsToGet = set([name for name in os.listdir(options.d)])
+        if prevArtistsDict.has_key(options.d):
+            print prevArtistsDict[options.d]
+            artistsToGet = artistsToGet - prevArtistsDict[options.d]
+            prevArtistsDict[options.d] = artistsToGet.union(prevArtistsDict[options.d])
+        else:
+            prevArtistsDict[options.d] = artistsToGet
     else:
         artistsToGet = set([line[:-1] for line in open(options.f).readlines()])
-
+    print artistsToGet
     print '\n\nNow tracking artists\n'
 
     # track the artists the user gives us
@@ -133,7 +147,7 @@ def main():
     alreadyTrackedArtists = []
     br.set_handle_redirect(True)
     for i, artist in enumerate(artistsToGet):
-        sys.stdout.write('\rTracking '+ str(i) + ' of ' + str(len(artistsToGet)))
+        sys.stdout.write('\rTracking '+ str(i+1) + ' of ' + str(len(artistsToGet)))
         sys.stdout.flush()
         # search for artist
         br.open('http://www.songkick.com/search?query=' + '+'.join(artist.split()))
@@ -156,7 +170,9 @@ def main():
             else:
                 alreadyTrackedArtists.append(link.text)
 
-
+    # save the artist that were tracked so next time they wont be tracked again.
+    p = pickle.Pickler(open('.tracked', 'w'))
+    p.dump(prevArtistsDict)
 
     # write out the results
     results = open(options.o, 'w')
