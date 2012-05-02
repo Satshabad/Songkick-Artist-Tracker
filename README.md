@@ -21,24 +21,19 @@ Or you can download the binary file AutoTracker.run and forget about the dependa
 To track a bunch of artists all at once, **list them in a file**, one per line, and run:
 
     $ python AutoTracker.py -u <username> -p <password> -f <filename.txt> 
-OR
-
-    $ ./Autotracker.run -u <username> -p <password> -f <filename.txt> 
     
 Or if you have all of your music organized in **folders by artist** you can track them all like this:
 
     $ python AutoTracker.py -u <username> -p <password> -d <directory-holding-artists>
-OR
-
-    $ ./AutoTracker.run -u <username> -p <password> -d <directory-holding-artists>
     
 If you would like the results written out to a special file, run this:
 
     $ python AutoTracker.py -u <username> -p <password> -d <directory-holding-artists> -o <myresults.txt>
-OR
 
-    $ ./AutoTracker.run -u <username> -p <password> -d <directory-holding-artists> -o <myresults.txt>
-    
+If you use the binary file this can all be done like this:
+
+    $ ./AutoTracker.run [options]
+
 Simple as that
 
 ## Dependencies
