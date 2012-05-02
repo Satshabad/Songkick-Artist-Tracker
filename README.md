@@ -23,9 +23,9 @@ Simple as that
 
 To run this program you will need these external libraries
 
-*BeautifulSoup
-*mechanize
-*docopt
+* BeautifulSoup
+* mechanize
+* docopt
 
 You can get these through pip like so:
 
