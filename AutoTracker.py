@@ -124,14 +124,17 @@ def main():
     else:
         artistsToGet = set([line[:-1] for line in open(options.f).readlines()])
 
+    print '\n\nNow tracking artists\n'
+
     # track the artists the user gives us
 
     unfoundArtists = []
     sucessArtists = []
     alreadyTrackedArtists = []
     br.set_handle_redirect(True)
-    for artist in artistsToGet:
-
+    for i, artist in enumerate(artistsToGet):
+        sys.stdout.write('\rTracking '+ str(i) + ' of ' + str(len(artistsToGet)))
+        sys.stdout.flush()
         # search for artist
         br.open('http://www.songkick.com/search?query=' + '+'.join(artist.split()))
         soup = BeautifulSoup.BeautifulSoup(br.response().read())
