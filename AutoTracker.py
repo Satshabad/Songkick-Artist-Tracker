@@ -17,6 +17,7 @@ except ImportError:
 import os
 
 try:
+    import docopt
     from docopt import docopt
 except ImportError:
     print 'Please install the docopt library (sudo pip install docopt)'
