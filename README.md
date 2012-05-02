@@ -26,6 +26,9 @@ Or if you have all of your music organized in **folders by artist** you can trac
 
     $ python AutoTracker.py -u <username> -p <password> -d <directory-holding-artists>
     
+*Note: this will remember the artists you tracked in that directory. If you run the same command again, 
+it will only attempt to track the new folders made. To let it retrack the whole directory, delete the .tracked file.
+    
 If you would like the results written out to a special file, run this:
 
     $ python AutoTracker.py -u <username> -p <password> -d <directory-holding-artists> -o <myresults.txt>
