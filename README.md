@@ -13,9 +13,6 @@ To get the program you can clone it as usual with, you will then need to get the
 
     # git clone git@github.com:Satshabad/Songkick-Artist-Tracker.git
     
-Or you can download the binary file AutoTracker.run and forget about the dependancies.
-
-
 ## Usage
 
 To track a bunch of artists all at once, **list them in a file**, one per line, and run:
@@ -33,15 +30,9 @@ If you would like the results written out to a special file, run this:
 
     $ python AutoTracker.py -u <username> -p <password> -d <directory-holding-artists> -o <myresults.txt>
 
-If you use the binary file this can all be done like this:
-
-    $ ./AutoTracker.run [options]
-
 Simple as that
 
 ## Dependencies
-
-(if you clone, or download)
 
 To run this program you will need these external libraries
 
