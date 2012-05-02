@@ -9,7 +9,7 @@ The goal of this program is to tell Songkick to track every artist in your music
 
 ## Get it
 
-To get the program you can clone it as usual with, you will then need to get the dependancies:
+To get the program you can clone it as usual with, you will then need to get the dependencies:
 
     # git clone git@github.com:Satshabad/Songkick-Artist-Tracker.git
     
@@ -47,3 +47,11 @@ You can get these through pip like so:
     $ sudo pip install docopt
     
 You can also install these through easy_install
+
+## Contribute
+
+This is a simple tool I made to make my life better.
+If it benefits you and you would like to help, open an issue and get coding!
+
+It would be great if someone with windows would use py2exe and make a standalone binary of this application.
+
