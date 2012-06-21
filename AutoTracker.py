@@ -128,16 +128,16 @@ def main():
             prevArtistsDict = unp.load()
         except IOError:
             prevArtistsDict = {}
+
         artistsToGet = set([name for name in os.listdir(options.d)])
+
         if prevArtistsDict.has_key(options.d):
-            print prevArtistsDict[options.d]
             artistsToGet = artistsToGet - prevArtistsDict[options.d]
             prevArtistsDict[options.d] = artistsToGet.union(prevArtistsDict[options.d])
         else:
             prevArtistsDict[options.d] = artistsToGet
     else:
         artistsToGet = set([line[:-1] for line in open(options.f).readlines()])
-    print artistsToGet
     print '\n\nNow tracking artists\n'
 
     # track the artists the user gives us
@@ -172,7 +172,10 @@ def main():
 
     # save the artist that were tracked so next time they wont be tracked again.
     p = pickle.Pickler(open('.tracked', 'w'))
-    p.dump(prevArtistsDict)
+
+    # if in directory mode dump dir records
+    if options.d:
+        p.dump(prevArtistsDict)
 
     # write out the results
     results = open(options.o, 'w')
