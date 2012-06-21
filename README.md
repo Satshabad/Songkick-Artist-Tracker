@@ -9,13 +9,10 @@ The goal of this program is to tell Songkick to track every artist in your music
 
 ## Get it
 
-To get the program you can clone it as usual with, you will then need to get the dependancies:
+To get the program you can clone it as usual with, you will then need to get the dependencies:
 
     # git clone git@github.com:Satshabad/Songkick-Artist-Tracker.git
     
-Or you can download the binary file AutoTracker.run and forget about the dependancies.
-
-
 ## Usage
 
 To track a bunch of artists all at once, **list them in a file**, one per line, and run:
@@ -26,19 +23,16 @@ Or if you have all of your music organized in **folders by artist** you can trac
 
     $ python AutoTracker.py -u <username> -p <password> -d <directory-holding-artists>
     
+*Note: this will remember the artists you tracked in that directory. If you run the same command again, 
+it will only attempt to track the new folders made. To let it retrack the whole directory, delete the .tracked file.
+    
 If you would like the results written out to a special file, run this:
 
     $ python AutoTracker.py -u <username> -p <password> -d <directory-holding-artists> -o <myresults.txt>
 
-If you use the binary file this can all be done like this:
-
-    $ ./AutoTracker.run [options]
-
 Simple as that
 
 ## Dependencies
-
-(if you clone, or download)
 
 To run this program you will need these external libraries
 
@@ -53,3 +47,11 @@ You can get these through pip like so:
     $ sudo pip install docopt
     
 You can also install these through easy_install
+
+## Contribute
+
+This is a simple tool I made to make my life better.
+If it benefits you and you would like to help, open an issue and get coding!
+
+It would be great if someone with windows would use py2exe and make a standalone binary of this application.
+
