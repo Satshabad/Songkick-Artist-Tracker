@@ -91,7 +91,8 @@ def main():
         exit()
 
     # Get all of the users so far tracked artists
-    trackedArtists = set()
+    trackedArtistsByNumber = set()
+    trackedArtistsByName = set()
     morePages = True
     i = 1
 
@@ -110,34 +111,44 @@ def main():
         links = soup.findAll(attrs={'href': BeautifulSoup.re.compile('/artists/*[^?]')})
         for link in links:
             # find the unique artist number
-            trackedArtists.add(BeautifulSoup.re.findall(r'/artists/([0-9]+)*[^?]', link.attrMap['href'])[0])
+            trackedArtistsByNumber.add(BeautifulSoup.re.findall(r'/artists/([0-9]+)*[^?]', link.attrMap['href'])[0])
+            #find the artists name
+            trackedArtistsByName.add(link.text)
         i += 1
 
         # display progress to user
-        sys.stdout.write('\rFound ' + str(len(trackedArtists)) + ' artists so far')
+        sys.stdout.write('\rFound ' + str(len(trackedArtistsByNumber)) + ' artists so far')
         sys.stdout.flush()
 
-        if trackedArtists.issubset(set()):
+        if trackedArtistsByNumber.issubset(set()):
             morePages = False
 
     # get the artists to track, if there was a previously tracked directory, just get the new artists.
     artistsToGet = []
+    try:
+        unp = pickle.Unpickler(open('.tracked'))
+        prevArtistsDict = unp.load()
+    except:
+        prevArtistsDict = {}
+
     if options.d:
-        try:
-            unp = pickle.Unpickler(open('.tracked'))
-            prevArtistsDict = unp.load()
-        except IOError:
-            prevArtistsDict = {}
-
-        artistsToGet = set([name for name in os.listdir(options.d)])
-
-        if prevArtistsDict.has_key(options.d):
-            artistsToGet = artistsToGet - prevArtistsDict[options.d]
-            prevArtistsDict[options.d] = artistsToGet.union(prevArtistsDict[options.d])
-        else:
-            prevArtistsDict[options.d] = artistsToGet
+        artistsToGet = set([unicode(name) for name in os.listdir(options.d)])
+        placeToLoadFrom = options.d
     else:
-        artistsToGet = set([line[:-1] for line in open(options.f).readlines()])
+        artistsToGet = set([unicode(line[:-2]) for line in open(options.f).readlines()])
+        placeToLoadFrom = options.f
+
+    if prevArtistsDict.has_key(placeToLoadFrom):
+        artistsToGet = artistsToGet - prevArtistsDict[placeToLoadFrom]
+        prevArtistsDict[placeToLoadFrom] = artistsToGet.union(prevArtistsDict[placeToLoadFrom])
+    else:
+        prevArtistsDict[placeToLoadFrom] = artistsToGet
+
+    # hopefully remove all the artists that have been just found on the users
+    artistsToGet = artistsToGet - trackedArtistsByName
+
+
+
     print '\n\nNow tracking artists\n'
 
     # track the artists the user gives us
@@ -146,29 +157,32 @@ def main():
     sucessArtists = []
     alreadyTrackedArtists = []
     br.set_handle_redirect(True)
-    for i, artist in enumerate(artistsToGet):
-        sys.stdout.write('\rTracking '+ str(i+1) + ' of ' + str(len(artistsToGet)))
-        sys.stdout.flush()
-        # search for artist
-        br.open('http://www.songkick.com/search?query=' + '+'.join(artist.split()))
-        soup = BeautifulSoup.BeautifulSoup(br.response().read())
+    try:
+        for i, artist in enumerate(artistsToGet):
+            sys.stdout.write('\rTracking '+ str(i+1) + ' of ' + str(len(artistsToGet)))
+            sys.stdout.flush()
+            # search for artist
+            br.open('http://www.songkick.com/search?query=' + '+'.join(artist.split()))
+            soup = BeautifulSoup.BeautifulSoup(br.response().read())
 
-        # if there is no artist by that name
-        if soup.findAll(attrs={'href': BeautifulSoup.re.compile('/artists/*[^?]')}) == []:
-            unfoundArtists.append(artist)
-        else:
-
-            # take the first artists result
-            link = soup.findAll(attrs={'href': BeautifulSoup.re.compile('/artists/*[^?]')})[1]
-
-            # check that the user is not already following this artist
-            if not BeautifulSoup.re.findall(r'/artists/([0-9]+)*[^?]', link.attrMap['href'])[0] in trackedArtists:
-                br.open('http://www.songkick.com/search?query=' + '+'.join(artist.split()))
-                br.select_form(nr=2)
-                br.submit()
-                sucessArtists.append(link.text)
+            # if there is no artist by that name
+            if soup.findAll(attrs={'href': BeautifulSoup.re.compile('/artists/*[^?]')}) == []:
+                unfoundArtists.append(artist)
             else:
-                alreadyTrackedArtists.append(link.text)
+
+                # take the first artists result
+                link = soup.findAll(attrs={'href': BeautifulSoup.re.compile('/artists/*[^?]')})[1]
+
+                # check that the user is not already following this artist
+                if not BeautifulSoup.re.findall(r'/artists/([0-9]+)*[^?]', link.attrMap['href'])[0] in trackedArtistsByNumber:
+                    br.open('http://www.songkick.com/search?query=' + '+'.join(artist.split()))
+                    br.select_form(nr=2)
+                    br.submit()
+                    sucessArtists.append(link.text)
+                else:
+                    alreadyTrackedArtists.append(link.text)
+    except:
+        print '\nsomething went wrong, but what did get done is written out to', options.o
 
     # save the artist that were tracked so next time they wont be tracked again.
     p = pickle.Pickler(open('.tracked', 'w'))
@@ -187,7 +201,7 @@ def main():
     for artist in unfoundArtists:
         results.write(artist + '\n')
 
-    results.write('\nArtists that were already tracked:\n')
+    results.write('\nArtists we tried to track but were already tracked:\n')
     for artist in alreadyTrackedArtists:
         results.write(artist + '\n')
 
